@@ -5,33 +5,42 @@ import {COLORS} from '../../constants';
 import {useDispatch} from 'react-redux';
 import {placeActions} from '../../store/action';
 import ImageSelector from '../../components/molecules/image-selector';
+import LocationSelector from '../../components/molecules/location-selector';
 
 const NewPlace = ({navigation}) => {
   const dispatch = useDispatch();
   const [name, setName] = useState('');
   const [image, setImage] = useState('');
+  const [location, setLocation] = useState(null);
 
   const handleNameChange = text => setName(text);
   const handleSavePlace = () => {
-    dispatch(
-      placeActions.addPlace(
-        name,
-        image,
-        '123 street, city, country',
-        14.44,
-        20.01,
-      ),
-    );
+    const {latitude, longitude} = location;
+    dispatch(placeActions.addPlace(name, image, latitude, longitude));
     navigation.navigate('Place');
   };
   const handleOnImage = uri => {
     setImage(uri);
+  };
+
+  const handleOnLocation = location => {
+    setLocation(location);
+  };
+
+  const handleOnMapLocation = () => {
+    navigation.navigate('Map', {
+      location,
+    });
   };
   return (
     <ScrollView>
       <View style={styles.container}>
         <Text style={styles.label}>Name</Text>
         <ImageSelector onImage={handleOnImage} />
+        <LocationSelector
+          onLocation={handleOnLocation}
+          onMapLocation={handleOnMapLocation}
+        />
         <TextInput
           style={styles.input}
           onChangeText={handleNameChange}
